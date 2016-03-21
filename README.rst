@@ -29,7 +29,7 @@ Use **pip** to install **try**:
 
 .. code::
 
-    pip install try
+    pip install trypackage
 
 
 Help
@@ -49,8 +49,8 @@ Help
       --help              Show this message and exit.
     ```
 
-.. |pypi| image:: https://img.shields.io/pypi/v/try.svg?style=flat&label=version
-    :target: https://pypi.python.org/pypi/try
+.. |pypi| image:: https://img.shields.io/pypi/v/trypackage.svg?style=flat&label=version
+    :target: https://pypi.python.org/pypi/trypackage
     :alt: Latest version released on PyPi
 
 .. |license| image:: https://img.shields.io/badge/license-MIT-blue.svg?style=flat

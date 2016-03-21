@@ -27,7 +27,7 @@ def get_version():
 
 
 setup(
-    name="try",
+    name="trypackage",
     version=get_version(),
     license="MIT",
 
