@@ -41,7 +41,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
 
-    install_requires=list(x.name for x in parse_requirements("./requirements.txt")),
+    install_requires=list(x.name for x in parse_requirements("./requirements.txt", session=False)),
 
     entry_points={
         "console_scripts": [
