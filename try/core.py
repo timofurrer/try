@@ -10,9 +10,13 @@
 import tempfile
 import contextlib
 from subprocess import Popen
+from collections import namedtuple
 
 
-def try_package(package, python_version, use_ipython=False):
+Package = namedtuple("Package", ["name", "url"])
+
+
+def try_packages(packages, python_version, use_ipython=False):
     """Try a python package with a specific python version.
 
     The python version must already be installed on the system.
@@ -20,7 +24,7 @@ def try_package(package, python_version, use_ipython=False):
     :param str package: the name of the package to try
     :param str python_version: the python version for the interpreter
     """
-    with use_import(package) as startup_script:
+    with use_import([x.name for x in packages]) as startup_script:
         if use_ipython:
             interpreter = build_ipython_interpreter_cmd(startup_script)
         else:
@@ -28,35 +32,36 @@ def try_package(package, python_version, use_ipython=False):
 
         cmd = "{virtualenv} && {pip_install} && {interpreter}".format(
             virtualenv=build_virtualenv_cmd(python_version),
-            pip_install=build_pip_cmd(package),
+            pip_install=build_pip_cmd([x.url for x in packages]),
             interpreter=interpreter)
         proc = Popen(cmd, shell=True)
         return proc.wait() == 0
 
 
 @contextlib.contextmanager
-def use_import(package):
+def use_import(packages):
     """Creates the python startup file for the interpreter.
 
-    :param str package: the name of the package to import
+    :param list packages: the name of the packages to import
 
     :returns: the path of the created file
     :rtype: str
     """
 
     with tempfile.NamedTemporaryFile(suffix=".py") as tmpfile:
-        tmpfile.write("import {0}\n".format(package).encode("utf-8"))
+        for package in packages:
+            tmpfile.write("import {0}\n".format(package).encode("utf-8"))
         tmpfile.file.flush()
         yield tmpfile.name
 
 
-def build_pip_cmd(package):
-    """Install the given package using pip.
+def build_pip_cmd(packages):
+    """Install the given packages using pip.
 
-    :param str package: the name of the package
+    :param list packages: the name of the packages
     """
 
-    return "python -m pip install {0} > /dev/null".format(package)
+    return "python -m pip install {0} > /dev/null".format(" ".join(packages))
 
 
 def build_virtualenv_cmd(python_version):

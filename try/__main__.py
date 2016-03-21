@@ -12,7 +12,7 @@ import re
 import sys
 import click
 
-from .core import try_package
+from .core import Package, try_packages
 
 
 def normalize_python_version(ctx, param, value):  # pylint: disable=unused-argument
@@ -28,17 +28,35 @@ def normalize_python_version(ctx, param, value):  # pylint: disable=unused-argum
     return value
 
 
+def fix_packages(ctx, param, value):
+    """Fix value of given packages."""
+    if not value:
+        return None
+
+    def fix_package(value):
+        """Fix name of package."""
+        if re.match("[^/]+?/[^/]+?", value):
+            return Package(value.split("/")[-1], "git+git://github.com/{0}".format(value))
+
+        return Package(value, value)
+
+    return [fix_package(x) for x in value]
+
+
 @click.command()
-@click.argument("package")
+@click.argument("packages", nargs=-1, callback=fix_packages)
 @click.option("-v", "--version", callback=normalize_python_version,
               help="The python version to use.")
 @click.option("--ipython", "use_ipython", flag_value=True,
               help="Use ipython instead of python.")
-def cli(package, version, use_ipython):
+def cli(packages, version, use_ipython):
     """Easily try out python packages."""
+    if not packages:
+        raise click.BadArgumentUsage("At least one package is required.")
+
     click.echo("==> Use python {0}".format(click.style(version, bold=True)))
-    click.echo("[*] Download {0} from PyPI".format(click.style(package, bold=True)))
-    if not try_package(package, version, use_ipython):
+    click.echo("[*] Download {0} from PyPI".format(click.style(",".join(p.name for p in packages), bold=True)))
+    if not try_packages(packages, version, use_ipython):
         click.secho("[*] Failed to try package. See logs for more details.", fg="red")
         sys.exit(1)
 
