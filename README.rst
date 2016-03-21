@@ -4,6 +4,8 @@ try
 
 **try** is an easy-to-use cli tool to try out python packages.
 
+|demo|
+
 Features
 --------
 
@@ -56,3 +58,7 @@ Help
 .. |license| image:: https://img.shields.io/badge/license-MIT-blue.svg?style=flat
     :target: https://raw.githubusercontent.com/timofurrer/try/master/LICENSE
     :alt: Package license
+
+.. |demo| image:: https://asciinema.org/a/bd60nu08dbklh5d16lyd69fvx.png
+    :target: https://asciinema.org/a/bd60nu08dbklh5d16lyd69fvx
+    :alt: Demo
