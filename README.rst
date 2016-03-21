@@ -31,7 +31,7 @@ Use **pip** to install **try**:
 
 .. code::
 
-    pip install trypackage
+    pip3 install trypackage
 
 
 Help
