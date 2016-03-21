@@ -11,6 +11,7 @@
 import re
 import sys
 import click
+import tempfile
 
 from .core import Package, try_packages
 
@@ -56,8 +57,10 @@ def cli(packages, version, use_ipython):
 
     click.echo("==> Use python {0}".format(click.style(version, bold=True)))
     click.echo("[*] Download {0} from PyPI".format(click.style(",".join(p.name for p in packages), bold=True)))
-    if not try_packages(packages, version, use_ipython):
-        click.secho("[*] Failed to try package. See logs for more details.", fg="red")
+    logfile = tempfile.NamedTemporaryFile(prefix="try-", suffix=".log", delete=False)
+    logfile.close()
+    if not try_packages(packages, version, use_ipython, logfile=logfile.name):
+        click.secho("[*] Failed to try package. See {0} for more details.".format(logfile.name), fg="red")
         sys.exit(1)
 
 
