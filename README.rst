@@ -22,6 +22,7 @@ Usage
     try requests --ipython
     try requests -v 3.5
     try requests -v /usr/bin/python3.4.1
+    try kennethreitz/requests --ipython
 
 
 Installation

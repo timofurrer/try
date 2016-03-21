@@ -56,7 +56,7 @@ def cli(packages, version, use_ipython):
         raise click.BadArgumentUsage("At least one package is required.")
 
     click.echo("==> Use python {0}".format(click.style(version, bold=True)))
-    click.echo("[*] Download {0} from PyPI".format(click.style(",".join(p.name for p in packages), bold=True)))
+    click.echo("[*] Downloading packages: {0}".format(click.style(",".join(p.url for p in packages), bold=True)))
     logfile = tempfile.NamedTemporaryFile(prefix="try-", suffix=".log", delete=False)
     logfile.close()
     if not try_packages(packages, version, use_ipython, logfile=logfile.name):
