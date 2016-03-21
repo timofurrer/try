@@ -49,7 +49,6 @@ Help
       -v, --version TEXT  The python version to use.
       --ipython           Use ipython instead of python.
       --help              Show this message and exit.
-    ```
 
 .. |pypi| image:: https://img.shields.io/pypi/v/trypackage.svg?style=flat&label=version
     :target: https://pypi.python.org/pypi/trypackage
