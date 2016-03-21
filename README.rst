@@ -50,6 +50,8 @@ Help
       --ipython           Use ipython instead of python.
       --help              Show this message and exit.
 
+**try** was inspired by https://github.com/VictorBjelkholm/trymodule.
+
 .. |pypi| image:: https://img.shields.io/pypi/v/trypackage.svg?style=flat&label=version
     :target: https://pypi.python.org/pypi/trypackage
     :alt: Latest version released on PyPi
