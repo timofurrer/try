@@ -88,4 +88,4 @@ def build_ipython_interpreter_cmd(startup_script):
 
     :param str startup_script: the script to launch on startup
     """
-    return "{0} && PYTHONSTARTUP={1} ipython".format(build_pip_cmd("ipython"), startup_script)
+    return "{0} && PYTHONSTARTUP={1} ipython".format(build_pip_cmd(["ipython"]), startup_script)
