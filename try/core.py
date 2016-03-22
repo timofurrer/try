@@ -30,7 +30,7 @@ class TryError(Exception):
         context.failed = True
 
 
-def try_packages(packages, python_version, use_ipython=False, keep=False):
+def try_packages(packages, python_version, use_ipython=False, use_editor=False, keep=False):
     """Try a python package with a specific python version.
 
     The python version must already be installed on the system.
@@ -38,6 +38,7 @@ def try_packages(packages, python_version, use_ipython=False, keep=False):
     :param str package: the name of the package to try
     :param str python_version: the python version for the interpreter
     :param bool use_ipython: use ipython as an interpreter
+    :param bool use_editor: use editor instead of interpreter
     :param bool keep: keep try environment files
     """
     with use_temp_directory(keep) as tmpdir:
@@ -48,27 +49,14 @@ def try_packages(packages, python_version, use_ipython=False, keep=False):
             if use_ipython:
                 pip_install("ipython")
 
-            interpreter = "ipython" if use_ipython else "python"
-            with use_import([p.import_name for p in packages]) as startup_script:
-                run_interpreter(interpreter, startup_script)
+            if not use_editor:
+                interpreter = "ipython" if use_ipython else "python"
+                with use_import([p.import_name for p in packages]) as startup_script:
+                    run_interpreter(interpreter, startup_script)
+            else:
+                with use_template([p.import_name for p in packages]) as template:
+                    run_editor(template)
         return tmpdir
-
-
-@contextlib.contextmanager
-def use_import(packages):
-    """Creates the python startup file for the interpreter.
-
-    :param list packages: the name of the packages to import
-
-    :returns: the path of the created file
-    :rtype: str
-    """
-    startup_script = os.path.join(context.tempdir_path, "startup.py")
-    with open(startup_script, "w+") as startup_script_file:
-        for package in packages:
-            startup_script_file.write("import {0}\n".format(package))
-        startup_script_file.flush()
-        yield startup_script
 
 
 @contextlib.contextmanager
@@ -96,6 +84,41 @@ def use_virtualenv(python_version):
         context.virtualenv_path = None
 
 
+@contextlib.contextmanager
+def use_import(packages):
+    """Creates the python startup file for the interpreter.
+
+    :param list packages: the name of the packages to import
+
+    :returns: the path of the created file
+    :rtype: str
+    """
+    startup_script = os.path.join(context.tempdir_path, "startup.py")
+    with open(startup_script, "w+") as startup_script_file:
+        for package in packages:
+            startup_script_file.write("import {0}\n".format(package))
+        startup_script_file.flush()
+        yield startup_script
+
+
+@contextlib.contextmanager
+def use_template(packages):
+    """Create a python template file importing the given packages.
+
+    :param list packages: the name of the packages to import
+
+    :returns: the path to the created tempkate file
+    :rtype: str
+    """
+    with open(os.path.join(os.path.dirname(__file__), "script.template")) as template_file:
+        template = template_file.read()
+
+    template_path = os.path.join(context.tempdir_path, "main.py")
+    with open(template_path, "w+") as template_file:
+        template_file.write(template.format("\n".join("import {0}".format(p) for p in packages)))
+    yield template_path
+
+
 def pip_install(package):
     """Install given package in virtualenv."""
     exec_in_virtualenv("python -m pip install {0} >> {1}".format(package, context.logfile))
@@ -104,6 +127,12 @@ def pip_install(package):
 def run_interpreter(interpreter, startup_script):
     """Run specific python interpreter."""
     exec_in_virtualenv("PYTHONSTARTUP={0} {1}".format(startup_script, interpreter))
+
+
+def run_editor(template_path):
+    """Run editor and open the given template file."""
+    editor = os.environ.get("EDITOR", "editor")
+    exec_in_virtualenv("{0} {1} && python {1}".format(editor, template_path))
 
 
 def exec_in_virtualenv(command):

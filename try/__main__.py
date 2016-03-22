@@ -62,8 +62,10 @@ def resolve_packages(ctx, param, value):
               help="Use ipython instead of python.")
 @click.option("-k", "--keep", flag_value=True,
               help="Keep try environment files.")
+@click.option("--editor", "use_editor", flag_value=True,
+              help="Try with editor instead of interpreter.")
 @click.version_option()
-def cli(packages, python, use_ipython, keep):
+def cli(packages, python, use_ipython, keep, use_editor):
     """Easily try out python packages."""
     if not packages:
         raise click.BadArgumentUsage("At least one package is required.")
@@ -72,7 +74,7 @@ def cli(packages, python, use_ipython, keep):
     click.echo("[*] Downloading packages: {0}".format(click.style(",".join(p.url for p in packages), bold=True)))
 
     try:
-        envdir = try_packages(packages, python, use_ipython, keep)
+        envdir = try_packages(packages, python, use_ipython, use_editor, keep)
     except TryError as error:
         click.secho("[*] {0}".format(error), fg="red")
         sys.exit(1)

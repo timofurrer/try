@@ -12,9 +12,10 @@ Features
 - Install specific package version from PyPI
 - Install package from GitHub
 - Install in virtualenv using specific version of python
-- Launch interactive python console (optional ipython) with already imported package
 - Specify alternative python package import name
 - Keep try environment after interactive session
+- Launch interactive python console (optional ipython) with already imported package
+- Launch editor instead of interpreter
 
 Usage
 -----
@@ -28,6 +29,7 @@ Usage
     try requests==2.8.1
     try kennethreitz/requests --ipython
     try click-didyoumean:click_didyoumean  # if python package name is different then pip package name
+    try requests --editor
 
 
 Installation
@@ -55,6 +57,7 @@ Help
       -p, --python TEXT   The python version to use.
       --ipython           Use ipython instead of python.
       -k, --keep          Keep try environment files.
+      --editor            Try with editor instead of interpreter.
       --version           Show the version and exit.
       --help              Show this message and exit.
 

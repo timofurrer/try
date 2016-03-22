@@ -1,0 +1,13 @@
+# -*- coding: utf-8 -*-
+
+import sys
+{0}
+
+
+def main(args):
+    """Try your awesome packages here!"""
+    pass
+
+
+if __name__ == "__main__":
+    exit(main(sys.argv[1:]))
