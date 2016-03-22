@@ -29,23 +29,32 @@ def normalize_python_version(ctx, param, value):  # pylint: disable=unused-argum
     return value
 
 
-def fix_packages(ctx, param, value):
+def resolve_packages(ctx, param, value):
     """Fix value of given packages."""
     if not value:
         return None
 
-    def fix_package(value):
+    def resolve_package(value):
         """Fix name of package."""
-        if re.match("[^/]+?/[^/]+?", value):
-            return Package(value.split("/")[-1], "git+git://github.com/{0}".format(value))
+        match = re.match(r"([^/]+?/[^/:]+)(?::(.+))?", value)
+        if match:
+            name = match.group(1)
+            url = "git+git://github.com/{0}".format(match.group(1))
+            import_name = match.group(2) if match.group(2) else match.group(1).split("/")[-1]
+        else:
+            if ":" in value:
+                name, import_name = value.split(":", 1)
+            else:
+                name = import_name = value
+            url = name
 
-        return Package(value, value)
+        return Package(name, url, import_name)
 
-    return [fix_package(x) for x in value]
+    return [resolve_package(x) for x in value]
 
 
 @click.command()
-@click.argument("packages", nargs=-1, callback=fix_packages)
+@click.argument("packages", nargs=-1, callback=resolve_packages)
 @click.option("-p", "--python", callback=normalize_python_version,
               help="The python version to use.")
 @click.option("--ipython", "use_ipython", flag_value=True,

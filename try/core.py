@@ -14,7 +14,7 @@ from subprocess import Popen
 from collections import namedtuple
 
 
-Package = namedtuple("Package", ["name", "url"])
+Package = namedtuple("Package", ["name", "url", "import_name"])
 
 
 def try_packages(packages, python_version, use_ipython=False, logfile="/dev/null"):
@@ -25,7 +25,7 @@ def try_packages(packages, python_version, use_ipython=False, logfile="/dev/null
     :param str package: the name of the package to try
     :param str python_version: the python version for the interpreter
     """
-    with use_import([x.name for x in packages]) as startup_script, use_temp_directory() as tmpdir:
+    with use_import([x.import_name for x in packages]) as startup_script, use_temp_directory() as tmpdir:
         if use_ipython:
             interpreter = build_ipython_interpreter_cmd(startup_script, logfile)
         else:

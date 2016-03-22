@@ -16,13 +16,14 @@ Features
 Usage
 -----
 
-.. code::
+.. code:: bash
 
     try requests
     try requests --ipython
     try requests -p 3.5
     try requests -p /usr/bin/python3.4.1
     try kennethreitz/requests --ipython
+    try click-didyoumean:click_didyoumean  # if python package name is different then pip package name
 
 
 Installation
