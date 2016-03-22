@@ -23,6 +23,7 @@ Usage
     try requests -p 3.5
     try requests -p /usr/bin/python3.4.1
     try kennethreitz/requests --ipython
+    try requests==2.8.1
     try click-didyoumean:click_didyoumean  # if python package name is different then pip package name
 
 

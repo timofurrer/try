@@ -37,15 +37,17 @@ def resolve_packages(ctx, param, value):
     def resolve_package(value):
         """Fix name of package."""
         match = re.match(r"([^/]+?/[^/:]+)(?::(.+))?", value)
-        if match:
+        if match:  # install from github repository
             name = match.group(1)
             url = "git+git://github.com/{0}".format(match.group(1))
             import_name = match.group(2) if match.group(2) else match.group(1).split("/")[-1]
-        else:
+        else:  # install from PyPI
             if ":" in value:
                 name, import_name = value.split(":", 1)
             else:
-                name = import_name = value
+                name = value
+                import_name = name.split("==")[0]
+
             url = name
 
         return Package(name, url, import_name)
