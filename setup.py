@@ -8,13 +8,9 @@
 
 import ast
 import re
-import sys
 
 from setuptools import setup, find_packages
 from pip.req import parse_requirements
-
-if sys.version_info < (3, 4, 1):
-    raise RuntimeError("try requires Python 3.4.1+")
 
 
 def get_version():
