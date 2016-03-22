@@ -46,20 +46,20 @@ def fix_packages(ctx, param, value):
 
 @click.command()
 @click.argument("packages", nargs=-1, callback=fix_packages)
-@click.option("-v", "--version", callback=normalize_python_version,
+@click.option("-p", "--python", callback=normalize_python_version,
               help="The python version to use.")
 @click.option("--ipython", "use_ipython", flag_value=True,
               help="Use ipython instead of python.")
-def cli(packages, version, use_ipython):
+def cli(packages, python, use_ipython):
     """Easily try out python packages."""
     if not packages:
         raise click.BadArgumentUsage("At least one package is required.")
 
-    click.echo("==> Use python {0}".format(click.style(version, bold=True)))
+    click.echo("==> Use python {0}".format(click.style(python, bold=True)))
     click.echo("[*] Downloading packages: {0}".format(click.style(",".join(p.url for p in packages), bold=True)))
     logfile = tempfile.NamedTemporaryFile(prefix="try-", suffix=".log", delete=False)
     logfile.close()
-    if not try_packages(packages, version, use_ipython, logfile=logfile.name):
+    if not try_packages(packages, python, use_ipython, logfile=logfile.name):
         click.secho("[*] Failed to try package. See {0} for more details.".format(logfile.name), fg="red")
         sys.exit(1)
 

@@ -20,8 +20,8 @@ Usage
 
     try requests
     try requests --ipython
-    try requests -v 3.5
-    try requests -v /usr/bin/python3.4.1
+    try requests -p 3.5
+    try requests -p /usr/bin/python3.4.1
     try kennethreitz/requests --ipython
 
 
@@ -47,7 +47,7 @@ Help
       Easily try out python packages.
 
     Options:
-      -v, --version TEXT  The python version to use.
+      -p, --python TEXT   The python version to use.
       --ipython           Use ipython instead of python.
       --help              Show this message and exit.
 
