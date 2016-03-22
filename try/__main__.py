@@ -61,6 +61,7 @@ def resolve_packages(ctx, param, value):
               help="The python version to use.")
 @click.option("--ipython", "use_ipython", flag_value=True,
               help="Use ipython instead of python.")
+@click.version_option()
 def cli(packages, python, use_ipython):
     """Easily try out python packages."""
     if not packages:
