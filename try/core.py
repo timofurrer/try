@@ -63,11 +63,12 @@ def use_import(packages):
     :returns: the path of the created file
     :rtype: str
     """
-    with tempfile.NamedTemporaryFile(suffix=".py") as tmpfile:
+    startup_script = os.path.join(context.tempdir_path, "startup.py")
+    with open(startup_script, "w+") as startup_script_file:
         for package in packages:
-            tmpfile.write("import {0}\n".format(package).encode("utf-8"))
-        tmpfile.file.flush()
-        yield tmpfile.name
+            startup_script_file.write("import {0}\n".format(package))
+        startup_script_file.flush()
+        yield startup_script
 
 
 @contextlib.contextmanager
