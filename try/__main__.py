@@ -11,9 +11,8 @@
 import re
 import sys
 import click
-import tempfile
 
-from .core import Package, try_packages
+from .core import Package, TryError, try_packages
 
 
 def normalize_python_version(ctx, param, value):  # pylint: disable=unused-argument
@@ -71,15 +70,15 @@ def cli(packages, python, use_ipython, keep):
 
     click.echo("==> Use python {0}".format(click.style(python, bold=True)))
     click.echo("[*] Downloading packages: {0}".format(click.style(",".join(p.url for p in packages), bold=True)))
-    logfile = tempfile.NamedTemporaryFile(prefix="try-", suffix=".log", delete=False)
-    logfile.close()
-    success, tmpdir = try_packages(packages, python, use_ipython, logfile.name, keep)
-    if keep:
-        click.echo("==> Have a look at the try environment at: {0}".format(tmpdir))
 
-    if not success:
-        click.secho("[*] Failed to try package. See {0} for more details.".format(logfile.name), fg="red")
+    try:
+        envdir = try_packages(packages, python, use_ipython, keep)
+    except TryError as error:
+        click.secho("[*] {0}".format(error), fg="red")
         sys.exit(1)
+
+    if keep:
+        click.echo("==> Have a look at the try environment at: {0}".format(envdir))
 
 
 main = cli

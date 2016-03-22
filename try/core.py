@@ -7,40 +7,51 @@
     :license: MIT, see LICENSE for details
 """
 
+import os
 import shutil
 import tempfile
 import contextlib
+import threading
 from subprocess import Popen
 from collections import namedtuple
 
 
 Package = namedtuple("Package", ["name", "url", "import_name"])
 
+context = threading.local()  # pylint: disable=invalid-name
+context.logfile = "logs"
+context.failed = False
 
-def try_packages(packages, python_version, use_ipython=False, logfile="/dev/null", keep=False):
+
+class TryError(Exception):
+    """Try specific exception."""
+    def __init__(self, msg):
+        super(TryError, self).__init__(msg)
+        context.failed = True
+
+
+def try_packages(packages, python_version, use_ipython=False, keep=False):
     """Try a python package with a specific python version.
 
     The python version must already be installed on the system.
 
     :param str package: the name of the package to try
     :param str python_version: the python version for the interpreter
+    :param bool use_ipython: use ipython as an interpreter
+    :param bool keep: keep try environment files
     """
-    with use_import([x.import_name for x in packages]) as startup_script, use_temp_directory(keep) as tmpdir:
-        if use_ipython:
-            interpreter = build_ipython_interpreter_cmd(startup_script, logfile)
-        else:
-            interpreter = build_python_interpreter_cmd(startup_script)
+    with use_temp_directory(keep) as tmpdir:
+        with use_virtualenv(python_version):
+            for package in packages:
+                pip_install(package.url)
 
-        cmd = "{virtualenv} && {pip_install} && {interpreter}".format(
-            virtualenv=build_virtualenv_cmd(python_version, logfile),
-            pip_install=build_pip_cmd([x.url for x in packages], logfile),
-            interpreter=interpreter)
+            if use_ipython:
+                pip_install("ipython")
 
-        with open(logfile, "a+") as log_f:
-            log_f.write("cmd is: '{0}'\n".format(cmd))
-
-        proc = Popen(cmd, shell=True, cwd=tmpdir)
-        return proc.wait() == 0, tmpdir
+            interpreter = "ipython" if use_ipython else "python"
+            with use_import([p.import_name for p in packages]) as startup_script:
+                run_interpreter(interpreter, startup_script)
+        return tmpdir
 
 
 @contextlib.contextmanager
@@ -64,43 +75,39 @@ def use_temp_directory(keep=False):
     """Creates a temporary directory for the virtualenv."""
     try:
         path = tempfile.mkdtemp(prefix="try-")
+        context.tempdir_path = path
         yield path
     finally:
-        if not keep:
+        if not keep and not context.failed:
             shutil.rmtree(path)
+        context.tempdir_path = None
 
 
-def build_pip_cmd(packages, logfile):
-    """Install the given packages using pip.
-
-    :param list packages: the name of the packages
-    """
-
-    return "python -m pip install {0} > {1}".format(" ".join(packages), logfile)
-
-
-def build_virtualenv_cmd(python_version, logfile):
-    """Build command to create and source a
-    python virtualenv using a specific python version.
-
-    :param str python_version: the python version to use
-    """
-    return "virtualenv env -p {0} > {1} && . env/bin/activate".format(python_version, logfile)
+@contextlib.contextmanager
+def use_virtualenv(python_version):
+    """Use specific virtualenv."""
+    try:
+        proc = Popen("virtualenv env -p {0} >> {1}".format(python_version, context.logfile),
+                     shell=True, cwd=context.tempdir_path)
+        context.virtualenv_path = "env"
+        yield proc.wait() == 0
+    finally:
+        context.virtualenv_path = None
 
 
-def build_python_interpreter_cmd(startup_script):
-    """Build command to launch python interpreter with
-    already imported package.
-
-    :param str startup_script: the script to launch on startup
-    """
-    return "PYTHONSTARTUP={0} python".format(startup_script)
+def pip_install(package):
+    """Install given package in virtualenv."""
+    exec_in_virtualenv("python -m pip install {0} >> {1}".format(package, context.logfile))
 
 
-def build_ipython_interpreter_cmd(startup_script, logfile):
-    """Build command to launch ipython interpreter with
-    already imported package.
+def run_interpreter(interpreter, startup_script):
+    """Run specific python interpreter."""
+    exec_in_virtualenv("PYTHONSTARTUP={0} {1}".format(startup_script, interpreter))
 
-    :param str startup_script: the script to launch on startup
-    """
-    return "{0} && PYTHONSTARTUP={1} ipython".format(build_pip_cmd(["ipython"], logfile), startup_script)
+
+def exec_in_virtualenv(command):
+    """Execute command in virtualenv."""
+    proc = Popen(". env/bin/activate && {0}".format(command), shell=True, cwd=context.tempdir_path)
+    if proc.wait() != 0:
+        raise TryError("Command '{0}' exited with error code: {1}. See {2}".format(
+            command, proc.returncode, os.path.join(context.tempdir_path, context.logfile)))
