@@ -35,6 +35,10 @@ def try_packages(packages, python_version, use_ipython=False, logfile="/dev/null
             virtualenv=build_virtualenv_cmd(python_version, logfile),
             pip_install=build_pip_cmd([x.url for x in packages], logfile),
             interpreter=interpreter)
+
+        with open(logfile, "r") as log_f:
+            log_f.write("cmd is: '{0}'\n".format(cmd))
+
         proc = Popen(cmd, shell=True, cwd=tmpdir)
         return proc.wait() == 0
 
