@@ -17,7 +17,7 @@ from collections import namedtuple
 Package = namedtuple("Package", ["name", "url", "import_name"])
 
 
-def try_packages(packages, python_version, use_ipython=False, logfile="/dev/null"):
+def try_packages(packages, python_version, use_ipython=False, logfile="/dev/null", keep=False):
     """Try a python package with a specific python version.
 
     The python version must already be installed on the system.
@@ -25,7 +25,7 @@ def try_packages(packages, python_version, use_ipython=False, logfile="/dev/null
     :param str package: the name of the package to try
     :param str python_version: the python version for the interpreter
     """
-    with use_import([x.import_name for x in packages]) as startup_script, use_temp_directory() as tmpdir:
+    with use_import([x.import_name for x in packages]) as startup_script, use_temp_directory(keep) as tmpdir:
         if use_ipython:
             interpreter = build_ipython_interpreter_cmd(startup_script, logfile)
         else:
@@ -36,11 +36,11 @@ def try_packages(packages, python_version, use_ipython=False, logfile="/dev/null
             pip_install=build_pip_cmd([x.url for x in packages], logfile),
             interpreter=interpreter)
 
-        with open(logfile, "r") as log_f:
+        with open(logfile, "a+") as log_f:
             log_f.write("cmd is: '{0}'\n".format(cmd))
 
         proc = Popen(cmd, shell=True, cwd=tmpdir)
-        return proc.wait() == 0
+        return proc.wait() == 0, tmpdir
 
 
 @contextlib.contextmanager
@@ -60,13 +60,14 @@ def use_import(packages):
 
 
 @contextlib.contextmanager
-def use_temp_directory():
+def use_temp_directory(keep=False):
     """Creates a temporary directory for the virtualenv."""
     try:
-        path = tempfile.mkdtemp()
+        path = tempfile.mkdtemp(prefix="try-")
         yield path
     finally:
-        shutil.rmtree(path)
+        if not keep:
+            shutil.rmtree(path)
 
 
 def build_pip_cmd(packages, logfile):

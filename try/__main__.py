@@ -61,8 +61,10 @@ def resolve_packages(ctx, param, value):
               help="The python version to use.")
 @click.option("--ipython", "use_ipython", flag_value=True,
               help="Use ipython instead of python.")
+@click.option("-k", "--keep", flag_value=True,
+              help="Keep try environment files.")
 @click.version_option()
-def cli(packages, python, use_ipython):
+def cli(packages, python, use_ipython, keep):
     """Easily try out python packages."""
     if not packages:
         raise click.BadArgumentUsage("At least one package is required.")
@@ -71,7 +73,11 @@ def cli(packages, python, use_ipython):
     click.echo("[*] Downloading packages: {0}".format(click.style(",".join(p.url for p in packages), bold=True)))
     logfile = tempfile.NamedTemporaryFile(prefix="try-", suffix=".log", delete=False)
     logfile.close()
-    if not try_packages(packages, python, use_ipython, logfile=logfile.name):
+    success, tmpdir = try_packages(packages, python, use_ipython, logfile.name, keep)
+    if keep:
+        click.echo("==> Have a look at the try environment at: {0}".format(tmpdir))
+
+    if not success:
         click.secho("[*] Failed to try package. See {0} for more details.".format(logfile.name), fg="red")
         sys.exit(1)
 

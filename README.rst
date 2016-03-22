@@ -14,6 +14,7 @@ Features
 - Install in virtualenv using specific version of python
 - Launch interactive python console (optional ipython) with already imported package
 - Specify alternative python package import name
+- Keep try environment after interactive session
 
 Usage
 -----
@@ -53,6 +54,8 @@ Help
     Options:
       -p, --python TEXT   The python version to use.
       --ipython           Use ipython instead of python.
+      -k, --keep          Keep try environment files.
+      --version           Show the version and exit.
       --help              Show this message and exit.
 
 **try** was inspired by https://github.com/VictorBjelkholm/trymodule.
