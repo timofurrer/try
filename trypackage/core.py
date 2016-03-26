@@ -30,29 +30,29 @@ class TryError(Exception):
         context.failed = True
 
 
-def try_packages(packages, python_version, use_ipython=False, use_editor=False, keep=False):
+def try_packages(packages, python_version, shell=None, use_editor=False, keep=False):
     """Try a python package with a specific python version.
 
     The python version must already be installed on the system.
 
-    :param str package: the name of the package to try
-    :param str python_version: the python version for the interpreter
-    :param bool use_ipython: use ipython as an interpreter
-    :param bool use_editor: use editor instead of interpreter
-    :param bool keep: keep try environment files
+    :param str package: the name of the package to try.
+    :param str python_version: the python version for the interpreter.
+    :param str shell: use different shell then default python shell.
+    :param bool use_editor: use editor instead of interpreter.
+    :param bool keep: keep try environment files.
     """
     with use_temp_directory(keep) as tmpdir:
         with use_virtualenv(python_version):
             for package in packages:
                 pip_install(package.url)
 
-            if use_ipython:
-                pip_install("ipython")
+            if shell:
+                pip_install(shell)
 
             if not use_editor:
-                interpreter = "ipython" if use_ipython else "python"
+                shell = shell if shell else "python"
                 with use_import([p.import_name for p in packages]) as startup_script:
-                    run_interpreter(interpreter, startup_script)
+                    run_shell(shell, startup_script)
             else:
                 with use_template([p.import_name for p in packages]) as template:
                     run_editor(template)
@@ -124,9 +124,9 @@ def pip_install(package):
     exec_in_virtualenv("python -m pip install {0} >> {1}".format(package, context.logfile))
 
 
-def run_interpreter(interpreter, startup_script):
-    """Run specific python interpreter."""
-    exec_in_virtualenv("PYTHONSTARTUP={0} {1}".format(startup_script, interpreter))
+def run_shell(shell, startup_script):
+    """Run specific python shell."""
+    exec_in_virtualenv("PYTHONSTARTUP={0} {1}".format(startup_script, shell))
 
 
 def run_editor(template_path):

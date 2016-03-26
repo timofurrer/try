@@ -60,21 +60,28 @@ def resolve_packages(ctx, param, value):
               help="The python version to use.")
 @click.option("--ipython", "use_ipython", flag_value=True,
               help="Use ipython instead of python.")
+@click.option("--shell",
+              help="Specify the python shell to use. (This will override --ipython)")
 @click.option("-k", "--keep", flag_value=True,
               help="Keep try environment files.")
 @click.option("--editor", "use_editor", flag_value=True,
-              help="Try with editor instead of interpreter.")
+              help="Try with editor instead of a shell.")
 @click.version_option()
-def cli(packages, python, use_ipython, keep, use_editor):
+def cli(packages, python, use_ipython, shell, keep, use_editor):
     """Easily try out python packages."""
     if not packages:
         raise click.BadArgumentUsage("At least one package is required.")
 
+    if not shell and use_ipython:
+        shell = "ipython"
+
     click.echo("==> Use python {0}".format(click.style(python, bold=True)))
+    if shell:
+        click.echo("==> Use shell {0}".format(click.style(shell, bold=True)))
     click.echo("[*] Downloading packages: {0}".format(click.style(",".join(p.url for p in packages), bold=True)))
 
     try:
-        envdir = try_packages(packages, python, use_ipython, use_editor, keep)
+        envdir = try_packages(packages, python, shell, use_editor, keep)
     except TryError as error:
         click.secho("[*] {0}".format(error), fg="red")
         sys.exit(1)
