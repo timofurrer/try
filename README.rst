@@ -14,8 +14,9 @@ Features
 - Install in virtualenv using specific version of python
 - Specify alternative python package import name
 - Keep try environment after interactive session
-- Launch interactive python console (optional ipython) with already imported package
+- Launch interactive python console with already imported package
 - Launch editor instead of interpreter
+- Launch arbitrary python shell instead of default python shell
 
 Usage
 -----
@@ -24,6 +25,7 @@ Usage
 
     try requests
     try requests --ipython
+    try requests --shell ptipython
     try requests -p 3.5
     try requests -p /usr/bin/python3.4.1
     try requests==2.8.1
@@ -56,6 +58,8 @@ Help
     Options:
       -p, --python TEXT   The python version to use.
       --ipython           Use ipython instead of python.
+      --shell TEXT        Specify the python shell to use. (This will override
+                           --ipython
       -k, --keep          Keep try environment files.
       --editor            Try with editor instead of interpreter.
       --version           Show the version and exit.
