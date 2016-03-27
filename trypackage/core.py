@@ -46,8 +46,9 @@ def try_packages(packages, python_version, shell=None, use_editor=False, keep=Fa
             for package in packages:
                 pip_install(package.url)
 
-            if shell:
-                pip_install(shell)
+            if shell and not shell == "python":
+                # shell could contain cli options: only take first word.
+                pip_install(shell.split()[0])
 
             if not use_editor:
                 shell = shell if shell else "python"
