@@ -30,7 +30,7 @@ class TryError(Exception):
         context.failed = True
 
 
-def try_packages(packages, python_version, shell=None, use_editor=False, keep=False):
+def try_packages(packages, python_version, shell=None, use_editor=False, keep=False, tmpdir_base=None):
     """Try a python package with a specific python version.
 
     The python version must already be installed on the system.
@@ -40,8 +40,9 @@ def try_packages(packages, python_version, shell=None, use_editor=False, keep=Fa
     :param str shell: use different shell then default python shell.
     :param bool use_editor: use editor instead of interpreter.
     :param bool keep: keep try environment files.
+    :param str tmpdir_base: the location for the temporary directory.
     """
-    with use_temp_directory(keep) as tmpdir:
+    with use_temp_directory(tmpdir_base, keep) as tmpdir:
         with use_virtualenv(python_version):
             for package in packages:
                 pip_install(package.url)
@@ -61,10 +62,16 @@ def try_packages(packages, python_version, shell=None, use_editor=False, keep=Fa
 
 
 @contextlib.contextmanager
-def use_temp_directory(keep=False):
+def use_temp_directory(tmpdir_base=None, keep=False):
     """Creates a temporary directory for the virtualenv."""
+    if tmpdir_base:
+        os.makedirs(tmpdir_base)
+        prefix = os.path.join(tmpdir_base, "try-")
+    else:
+        prefix = "try-"
+
     try:
-        path = tempfile.mkdtemp(prefix="try-")
+        path = tempfile.mkdtemp(prefix=prefix)
         context.tempdir_path = path
         yield path
     finally:

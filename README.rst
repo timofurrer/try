@@ -51,6 +51,7 @@ The following ``config.ini`` file shows all available configuration options:
     shell=ipython
     keep=false
     always_use_editor=false
+    tmpdir=~/.try
 
 
 Installation

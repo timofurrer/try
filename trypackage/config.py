@@ -7,6 +7,7 @@
     :license: MIT, see LICENSE for details
 """
 
+import os
 
 try:
     import configparser
@@ -31,6 +32,7 @@ def parse_config(configfile):
         "python": parser.get("env", "python", fallback=None),
         "shell": parser.get("env", "shell", fallback=None),
         "keep": parser.getboolean("env", "keep", fallback=False),
-        "use_editor": parser.getboolean("env", "always_use_editor", fallback=False)
+        "use_editor": parser.getboolean("env", "always_use_editor", fallback=False),
+        "tmpdir": os.path.expanduser(os.path.expandvars(parser.get("env", "tmpdir", fallback="")))
     }
     return config
