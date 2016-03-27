@@ -5,4 +5,4 @@
     :license: MIT, see LICENSE for details
 """
 
-__VERSION__ = "0.1.6"
+__VERSION__ = "0.2.0"
