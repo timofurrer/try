@@ -8,11 +8,13 @@
 """
 
 
+import os
 import re
 import sys
 import click
 
 from .core import Package, TryError, try_packages
+from .config import parse_config
 
 
 def normalize_python_version(ctx, param, value):  # pylint: disable=unused-argument
@@ -54,7 +56,7 @@ def resolve_packages(ctx, param, value):
     return [resolve_package(x) for x in value]
 
 
-@click.command()
+@click.command(context_settings=dict(default_map=parse_config(os.path.join(click.get_app_dir("try"), "config.ini"))))
 @click.argument("packages", nargs=-1, callback=resolve_packages)
 @click.option("-p", "--python", callback=normalize_python_version,
               help="The python version to use.")
