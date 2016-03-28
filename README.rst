@@ -32,6 +32,67 @@ Usage
     try kennethreitz/requests --ipython
     try click-didyoumean:click_didyoumean  # if python package name is different then pip package name
     try requests --editor
+    
+Usage examples
+--------------
+
+**Try single python package:**
+
+.. code:: bash
+
+    try requests
+    try flask
+    
+**Try multiple python packages in one session:**
+
+.. code:: bash
+
+    try requests flask
+    
+**Try specific version of a package:**
+
+.. code:: bash
+
+    try requests==2.8.1  # tries version 2.8.1 of requests instead of latest
+    
+**Try package from GitHub repository:**
+
+.. code:: bash
+
+    try <user>/<repo>  # syntax example
+    try kennethreity/requests  # installs master branch of Kenneth's requests package from GitHub
+    
+**Try package but import with different name than package name:**
+
+.. code:: bash
+
+    try <package_name>:<import_name>  # syntax example
+    try click-didyoumean:click_didyoumean  # install click-didyoumean but import click_didyoumean
+
+**Try package with specific python version:**
+
+.. code:: bash
+
+    try requests --python 3.5  # use python3.5 in virtualenv
+    try requests -p 2.7  # use python2.7 in virtualenv
+    try requests -p ~/work/cpython/bin/python  # use python binary from specific location
+    
+**Try package with specific shell/repl:**
+
+.. code:: bash
+
+    try requests --shell python  # use python repl (default value)
+    try requests --shell ipython  # use ipython
+    try requests --shell ptpython  # use ptpython
+    try requests --shell ptipython  # use ptipython
+    try requests --shell bpython  # use bpython
+    try requests --ipython  # use ipython - an alias for --shell ipython
+    
+**Try package writing a little script instead of opening shell:**
+
+.. code:: bash
+
+    try requests --editor  # opens $EDITOR or editor instead of shell
 
 
 Configuration
