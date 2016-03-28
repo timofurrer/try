@@ -51,7 +51,7 @@ def resolve_packages(ctx, param, value):
 
             url = name
 
-        return Package(name, url, import_name)
+        return Package(name, url, import_name.replace("-", "_"))
 
     return [resolve_package(x) for x in value]
 
