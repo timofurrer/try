@@ -77,6 +77,8 @@ Usage examples
 
     try requests --virtualenv ~/.try/sandbox  # use virtualenv at ~/.try/sandbox
 
+*⇢ see virtualenv config value in env section in* `configuration`_ *file.*
+
 **Try package with specific python version:**
 
 .. code:: bash
@@ -84,6 +86,8 @@ Usage examples
     try requests --python 3.5  # use python3.5 in virtualenv
     try requests -p 2.7  # use python2.7 in virtualenv
     try requests -p ~/work/cpython/bin/python  # use python binary from specific location
+
+*⇢ see python config value in env section in* `configuration`_ *file.*
 
 **Try package with specific shell/repl:**
 
@@ -96,11 +100,31 @@ Usage examples
     try requests --shell bpython  # use bpython
     try requests --ipython  # use ipython - an alias for --shell ipython
 
+*⇢ see shell config value in env section in* `configuration`_ *file.*
+
 **Try package writing a little script instead of opening shell:**
 
 .. code:: bash
 
     try requests --editor  # opens $EDITOR or editor instead of shell
+
+*⇢ see always_use_editor config value in env section in* `configuration`_ *file.*
+
+**Keep virtualenv files after try run:**
+
+.. code:: bash
+
+    try requests --keep
+
+*⇢ see keep config value in env section in* `configuration`_ *file.*
+
+**Use a specific location for the virtualenv files:**
+
+.. code:: bash
+
+    try requests --tmpdir ~/.try
+
+*⇢ see tmpdir config value in env section in* `configuration`_ *file.*
 
 
 .. _configuration:
