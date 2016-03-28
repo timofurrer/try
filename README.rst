@@ -1,6 +1,6 @@
 try
 ===
-|pypi| |license|
+|pypi| |license| |wheel|
 
 **try** is an easy-to-use cli tool to try out python packages.
 
@@ -32,7 +32,7 @@ Usage
     try kennethreitz/requests --ipython
     try click-didyoumean:click_didyoumean  # if python package name is different then pip package name
     try requests --editor
-    
+
 Usage examples
 --------------
 
@@ -42,26 +42,26 @@ Usage examples
 
     try requests
     try flask
-    
+
 **Try multiple python packages in one session:**
 
 .. code:: bash
 
     try requests flask
-    
+
 **Try specific version of a package:**
 
 .. code:: bash
 
     try requests==2.8.1  # tries version 2.8.1 of requests instead of latest
-    
+
 **Try package from GitHub repository:**
 
 .. code:: bash
 
     try <user>/<repo>  # syntax example
     try kennethreity/requests  # installs master branch of Kenneth's requests package from GitHub
-    
+
 **Try package but import with different name than package name:**
 
 .. code:: bash
@@ -76,7 +76,7 @@ Usage examples
     try requests --python 3.5  # use python3.5 in virtualenv
     try requests -p 2.7  # use python2.7 in virtualenv
     try requests -p ~/work/cpython/bin/python  # use python binary from specific location
-    
+
 **Try package with specific shell/repl:**
 
 .. code:: bash
@@ -87,7 +87,7 @@ Usage examples
     try requests --shell ptipython  # use ptipython
     try requests --shell bpython  # use bpython
     try requests --ipython  # use ipython - an alias for --shell ipython
-    
+
 **Try package writing a little script instead of opening shell:**
 
 .. code:: bash
@@ -155,6 +155,10 @@ Help
 .. |license| image:: https://img.shields.io/badge/license-MIT-blue.svg?style=flat
     :target: https://raw.githubusercontent.com/timofurrer/try/master/LICENSE
     :alt: Package license
+
+.. |wheel| image:: https://img.shields.io/pypi/wheel/radish-bdd.svg
+    :target: https://pypi.python.org/pypi/trypackage
+    :alt: Package is available as wheel
 
 .. |demo| image:: https://asciinema.org/a/bd60nu08dbklh5d16lyd69fvx.png
     :target: https://asciinema.org/a/bd60nu08dbklh5d16lyd69fvx
