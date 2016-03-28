@@ -36,6 +36,8 @@ Usage
 Usage examples
 --------------
 
+*Note: most of the following cli options can also be configured in the* `configuration`_ *file!*
+
 **Try single python package:**
 
 .. code:: bash
@@ -69,6 +71,12 @@ Usage examples
     try <package_name>:<import_name>  # syntax example
     try click-didyoumean:click_didyoumean  # install click-didyoumean but import click_didyoumean
 
+**Try package in already existing virtualenv:**
+
+.. code:: bash
+
+    try requests --virtualenv ~/.try/sandbox  # use virtualenv at ~/.try/sandbox
+
 **Try package with specific python version:**
 
 .. code:: bash
@@ -95,6 +103,8 @@ Usage examples
     try requests --editor  # opens $EDITOR or editor instead of shell
 
 
+.. _configuration:
+
 Configuration
 -------------
 
@@ -108,6 +118,7 @@ The following ``config.ini`` file shows all available configuration options:
 .. code:: ini
 
     [env]
+    virtualenv=~/.try/sandbox
     python=3.5
     shell=ipython
     keep=false
@@ -137,14 +148,16 @@ Help
       Easily try out python packages.
 
     Options:
-      -p, --python TEXT   The python version to use.
-      --ipython           Use ipython instead of python.
-      --shell TEXT        Specify the python shell to use. (This will override
-                           --ipython
-      -k, --keep          Keep try environment files.
-      --editor            Try with editor instead of interpreter.
-      --version           Show the version and exit.
-      --help              Show this message and exit.
+      --virtualenv TEXT  Use already existing virtualenv.
+      -p, --python TEXT  The python version to use.
+      --ipython          Use ipython instead of python.
+      --shell TEXT       Specify the python shell to use. (This will override
+                         --ipython
+      -k, --keep         Keep try environment files.
+      --editor           Try with editor instead of interpreter.
+      --tmpdir TEXT      Specify location for temporary directory.
+      --version          Show the version and exit.
+      --help             Show this message and exit.
 
 **try** was inspired by https://github.com/VictorBjelkholm/trymodule.
 

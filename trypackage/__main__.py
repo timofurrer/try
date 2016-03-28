@@ -58,6 +58,8 @@ def resolve_packages(ctx, param, value):
 
 @click.command(context_settings=dict(default_map=parse_config(os.path.join(click.get_app_dir("try"), "config.ini"))))
 @click.argument("packages", nargs=-1, callback=resolve_packages)
+@click.option("--virtualenv",
+              help="Use already existing virtualenv.")
 @click.option("-p", "--python", callback=normalize_python_version,
               help="The python version to use.")
 @click.option("--ipython", "use_ipython", flag_value=True,
@@ -71,7 +73,7 @@ def resolve_packages(ctx, param, value):
 @click.option("--tmpdir",
               help="Specify location for temporary directory.")
 @click.version_option()
-def cli(packages, python, use_ipython, shell, keep, use_editor, tmpdir):  # pylint: disable=too-many-arguments
+def cli(packages, virtualenv, python, use_ipython, shell, keep, use_editor, tmpdir):  # pylint: disable=too-many-arguments
     """Easily try out python packages."""
     if not packages:
         raise click.BadArgumentUsage("At least one package is required.")
@@ -85,7 +87,7 @@ def cli(packages, python, use_ipython, shell, keep, use_editor, tmpdir):  # pyli
     click.echo("[*] Downloading packages: {0}".format(click.style(",".join(p.url for p in packages), bold=True)))
 
     try:
-        envdir = try_packages(packages, python, shell, use_editor, keep, tmpdir)
+        envdir = try_packages(packages, virtualenv, python, shell, use_editor, keep, tmpdir)
     except TryError as error:
         click.secho("[*] {0}".format(error), fg="red")
         sys.exit(1)
