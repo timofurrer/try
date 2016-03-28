@@ -1,2 +1,2 @@
 publish:
-	@python setup.py sdist register upload
+	@python setup.py sdist bdist_wheel upload
