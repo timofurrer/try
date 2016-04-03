@@ -7,12 +7,36 @@
     :license: MIT, see LICENSE for details
 """
 
+import sys
 import os
 
 try:
     import configparser
 except ImportError:
     import ConfigParser as configparser
+
+
+PY2 = sys.version_info.major == 2
+
+
+# function for compatibility
+def get_option(parser_func, section, option, default=None):
+    """Get config value from the given
+    section and option.
+
+    :param func parser_func: the config parser function to get the option.
+    :param str section: the config section name.
+    :param str option: the config option name.
+    :param default: the default value if the given option in the given section
+                    is not found.
+    """
+    if PY2:
+        try:
+            return parser_func(section, option)
+        except (configparser.NoSectionError, configparser.NoOptionError):
+            return default
+    else:
+        return parser_func(section, option, fallback=default)
 
 
 def parse_config(configfile):
@@ -29,10 +53,10 @@ def parse_config(configfile):
     parser.read(configfile)
 
     config = {
-        "python": parser.get("env", "python", fallback=None),
-        "shell": parser.get("env", "shell", fallback=None),
-        "keep": parser.getboolean("env", "keep", fallback=False),
-        "use_editor": parser.getboolean("env", "always_use_editor", fallback=False),
-        "tmpdir": os.path.expanduser(os.path.expandvars(parser.get("env", "tmpdir", fallback="")))
+        "python": get_option(parser.get, "env", "python"),
+        "shell": get_option(parser.get, "env", "shell"),
+        "keep": get_option(parser.getboolean, "env", "keep", default=False),
+        "use_editor": get_option(parser.getboolean, "env", "always_use_editor", default=False),
+        "tmpdir": os.path.expanduser(os.path.expandvars(get_option(parser.get, "env", "tmpdir", default="")))
     }
     return config
