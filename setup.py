@@ -10,7 +10,6 @@ import ast
 import re
 
 from setuptools import setup, find_packages
-from pip.req import parse_requirements
 
 
 def get_version():
@@ -37,7 +36,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
 
-    install_requires=list(x.name for x in parse_requirements("./requirements.txt", session=False)),
+    install_requires=["click"],
 
     entry_points={
         "console_scripts": [
