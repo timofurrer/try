@@ -62,7 +62,7 @@ Usage examples
 .. code:: bash
 
     try <user>/<repo>  # syntax example
-    try kennethreity/requests  # installs master branch of Kenneth's requests package from GitHub
+    try kennethreitz/requests  # installs master branch of Kenneth's requests package from GitHub
 
 **Try package but import with different name than package name:**
 
