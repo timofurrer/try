@@ -2,8 +2,6 @@
 
 """
     Setup try package.
-
-    Only support Python versions > 3.4.1
 """
 
 import ast
