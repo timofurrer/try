@@ -1,0 +1,14 @@
+language: python
+
+script: echo 'Release trypackage to PyPI'
+
+deploy:
+  provider: pypi
+  user: tuxtimo
+  password:
+    secure: Eoh8JlZ9KQfpw+QyhMHepAAgbNNOh6RKs9vkG5qF6KKNfy4PpcL4f3PhmiOBZuoYfw24iPDjc1ZjET6YS4uAYK0cWfOCk/ni90nevFOlNcfl9ReimC7YGYSCmMZ+ZkjR20cAv6w+OXjf8m+erKi+oDXyyLPBLRGPNOP9CBfl+4cxa+p1hfUU1GCCFObiGpSCx0JLdDPuja+a10+UfVsFzBYQgI+7M9Vj35hs7IE3HpwbuV3Am2ATvzRkn3EEDzzb2HuZHx96usyV0CGir0VH4p0nnOVIkcs5fLslSPGUtg2GYgYEPE+2iLboOLAbyFlTXKDSNTTW+8H66nG9voBuz92uy2Kq2cJt4trvsSCynU8K5yHVoTxRxE0xmFvZ5OSGvnX88GIngayByM+ZT7ZI2QjK0+tC7AmiAuwpik3Xa/VoQJZMEnDbKBQ5f7XpQLCmuXOL7dZeLpQDaVZAzkebr74V5gYD14QAA2Ny9e/TztkqsoVDkbtWTq+hqF/r/9vxe67Mqdqq1xexX2hQw9thT2oZIWELyX5rc39YucMyABa0Bi0T8A21F482BQ/YwjG/YMMLIBYBu+zBotvqTcBh2aKT2mJfM8FHaTUFLEQVlP1VH0DSSfvmiGViDkFpDNwtFeqTWpedke36j7T4477VcVGGPIOC8FgGZTTA5RVN8Ec=
+  on:
+    tags: true
+    distributions: sdist bdist_wheel
+    repo: timofurrer/try
+    branch: master
