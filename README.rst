@@ -178,7 +178,7 @@ Help
       --shell TEXT       Specify the python shell to use. (This will override
                          --ipython
       -k, --keep         Keep try environment files.
-      --editor           Try with editor instead of interpreter.
+      -e, --editor       Try with editor instead of interpreter.
       --tmpdir TEXT      Specify location for temporary directory.
       --version          Show the version and exit.
       --help             Show this message and exit.

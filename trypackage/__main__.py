@@ -68,7 +68,7 @@ def resolve_packages(ctx, param, value):
               help="Specify the python shell to use. (This will override --ipython)")
 @click.option("-k", "--keep", flag_value=True,
               help="Keep try environment files.")
-@click.option("--editor", "use_editor", flag_value=True,
+@click.option("-e", "--editor", "use_editor", flag_value=True,
               help="Try with editor instead of a shell.")
 @click.option("--tmpdir",
               help="Specify location for temporary directory.")
