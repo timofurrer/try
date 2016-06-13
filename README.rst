@@ -134,7 +134,7 @@ Configuration
 
 ``try`` can be configured to your preferences - like always use ``ipython`` as a shell or always use ``python3.5``.
 The configuration file is located in your users application configuration directory in a file called ``config.ini``.
-This location is OS dependent and as specified here: http://click.pocoo.org/5/api/#click.get_app_dir
+This location is OS dependent and is specified here: http://click.pocoo.org/5/api/#click.get_app_dir
 
 The following ``config.ini`` file shows all available configuration options:
 
