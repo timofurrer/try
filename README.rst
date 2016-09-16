@@ -197,6 +197,6 @@ Help
     :target: https://pypi.python.org/pypi/trypackage
     :alt: Package is available as wheel
 
-.. |demo| image:: https://asciinema.org/a/bd60nu08dbklh5d16lyd69fvx.png
+.. |demo| image:: https://raw.githubusercontent.com/timofurrer/try/master/docs/asciicast.gif
     :target: https://asciinema.org/a/bd60nu08dbklh5d16lyd69fvx
     :alt: Demo
