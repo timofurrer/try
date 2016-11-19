@@ -29,7 +29,7 @@ class TryError(Exception):
         context.failed = True
 
 
-def try_packages(packages, virtualenv=None, python_version=None, shell=None, use_editor=False, keep=False, tmpdir_base=None):
+def try_packages(packages, virtualenv=None, python_version=None, shell=None, use_editor=False, keep=False, tmpdir_base=None, index=None):
     """Try a python package with a specific python version.
 
     The python version must already be installed on the system.
@@ -41,11 +41,12 @@ def try_packages(packages, virtualenv=None, python_version=None, shell=None, use
     :param bool use_editor: use editor instead of interpreter.
     :param bool keep: keep try environment files.
     :param str tmpdir_base: the location for the temporary directory.
+    :param str index: the python packaging index URL.
     """
     with use_temp_directory(tmpdir_base, keep) as tmpdir:
         with use_virtualenv(virtualenv, python_version):
             for package in packages:
-                pip_install(package.url)
+                pip_install(package.url, index)
 
             if shell and not shell == "python":
                 # shell could contain cli options: only take first word.
@@ -137,9 +138,10 @@ def use_template(packages):
     yield template_path
 
 
-def pip_install(package):
+def pip_install(package, index=None):
     """Install given package in virtualenv."""
-    exec_in_virtualenv("python -m pip install {0} >> {1}".format(package, context.logfile))
+    exec_in_virtualenv("python -m pip install {2} {0} >> {1}".format(
+        package, context.logfile, "-i {0}".format(index) if index else ''))
 
 
 def run_shell(shell, startup_script):

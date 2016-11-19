@@ -72,8 +72,10 @@ def resolve_packages(ctx, param, value):
               help="Try with editor instead of a shell.")
 @click.option("--tmpdir",
               help="Specify location for temporary directory.")
+@click.option("-i", "--index",
+              help="Specify the Packaging Index.")
 @click.version_option()
-def cli(packages, virtualenv, python, use_ipython, shell, keep, use_editor, tmpdir):  # pylint: disable=too-many-arguments
+def cli(packages, virtualenv, python, use_ipython, shell, keep, use_editor, tmpdir, index):  # pylint: disable=too-many-arguments
     """Easily try out python packages."""
     if not packages:
         raise click.BadArgumentUsage("At least one package is required.")
@@ -87,7 +89,7 @@ def cli(packages, virtualenv, python, use_ipython, shell, keep, use_editor, tmpd
     click.echo("[*] Downloading packages: {0}".format(click.style(",".join(p.url for p in packages), bold=True)))
 
     try:
-        envdir = try_packages(packages, virtualenv, python, shell, use_editor, keep, tmpdir)
+        envdir = try_packages(packages, virtualenv, python, shell, use_editor, keep, tmpdir, index)
     except TryError as error:
         click.secho("[*] {0}".format(error), fg="red")
         sys.exit(1)
