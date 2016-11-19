@@ -8,5 +8,5 @@
 from .core import try_packages, TryError, Package
 
 
-__VERSION__ = "0.2.4"
+__VERSION__ = "0.3.0"
 __all__ = ["try_packages", "TryError", "Package"]
