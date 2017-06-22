@@ -1,8 +1,8 @@
-try - It's never been easier to try python packages
+try - It's never been easier to try Python packages
 ===================================================
 |pypi| |license| |wheel|
 
-**try** is an easy-to-use cli tool to try out python packages.
+**try** is an easy-to-use cli tool to try out Python packages.
 
 |demo|
 
