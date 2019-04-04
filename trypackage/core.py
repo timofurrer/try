@@ -8,11 +8,12 @@
 """
 
 import os
+import click
 import shutil
 import tempfile
 import contextlib
 import threading
-from subprocess import Popen
+from subprocess import Popen, call
 from collections import namedtuple
 
 
@@ -48,7 +49,7 @@ def try_packages(packages, virtualenv=None, python_version=None, shell=None, use
             for package in packages:
                 pip_install(package.url, index)
 
-            if shell and not shell == "python":
+            if shell and shell != "python":
                 # shell could contain cli options: only take first word.
                 pip_install(shell.split()[0])
 
@@ -88,17 +89,15 @@ def use_virtualenv(virtualenv, python_version):
     """Use specific virtualenv."""
     try:
         if virtualenv:
-            # check if given directory is a virtualenv
-            if not os.path.join(virtualenv, "bin/activate"):
-                raise TryError("Given directory {0} is not a virtualenv.".format(virtualenv))
-
             context.virtualenv_path = virtualenv
-            yield True
         else:
-            proc = Popen("virtualenv env -p {0} >> {1}".format(python_version, context.logfile),
-                         shell=True, cwd=context.tempdir_path)
+            p = Popen("virtualenv env -p {0} >> {1}".format(python_version, context.logfile),
+                      shell=True, cwd=context.tempdir_path)
+            if p.wait() != 0:
+                raise RuntimeError("Failed to create virtualenv!")
             context.virtualenv_path = os.path.join(context.tempdir_path, "env")
-            yield proc.wait() == 0
+        inline_activate_virtualenv(context.virtualenv_path)
+        yield
     finally:
         context.virtualenv_path = None
 
@@ -140,24 +139,56 @@ def use_template(packages):
 
 def pip_install(package, index=None):
     """Install given package in virtualenv."""
-    exec_in_virtualenv("python -m pip install {2} {0} >> {1}".format(
+    exec_command("python -m pip install {2} {0} >> {1}".format(
         package, context.logfile, "-i {0}".format(index) if index else ''))
 
 
 def run_shell(shell, startup_script):
     """Run specific python shell."""
-    exec_in_virtualenv("PYTHONSTARTUP={0} {1}".format(startup_script, shell))
+    exec_command(shell, {"PYTHONSTARTUP": startup_script})
 
 
 def run_editor(template_path):
     """Run editor and open the given template file."""
-    editor = os.environ.get("EDITOR", "editor")
-    exec_in_virtualenv("{0} {1} && python {1}".format(editor, template_path))
+    click.edit(filename=template_path, env=os.environ.copy())
+    exec_command("python {}".format(template_path))
 
 
-def exec_in_virtualenv(command):
-    """Execute command in virtualenv."""
-    proc = Popen(". {0}/bin/activate && {1}".format(context.virtualenv_path, command), shell=True)
-    if proc.wait() != 0:
+def find_virtualenv_file(virtualenv_path, file_path):
+    """Find activate_this.py script inside a virtualenv_path."""
+    for bin_path in ("Scripts", "bin"):
+        try_path = os.path.join(virtualenv_path, bin_path, file_path)
+        if os.path.isfile(try_path):
+            return try_path
+    return None
+
+
+def exec_command(command, extra_env=None):
+    """Execute given command in subprocess."""
+    kwargs = {"shell": True}
+    if extra_env:
+        env = os.environ.copy()
+        env.update(extra_env)
+        kwargs.update({"env": env})
+    retcode = call(command, **kwargs)
+    if retcode != 0:
         raise TryError("Command '{0}' exited with error code: {1}. See {2}".format(
-            command, proc.returncode, context.logfile))
+            command, retcode, context.logfile))
+
+
+def inline_activate_virtualenv(virtualenv):
+    """Activate a virtualenv in current process."""
+    if not find_virtualenv_file(virtualenv, "activate"):
+        raise TryError("Given directory {0} is not a virtualenv.".format(virtualenv))
+    activate_this = find_virtualenv_file(virtualenv, "activate.py")
+    if activate_this:   # virtualenv
+        with open(activate_this) as f:
+            code = compile(f.read(), activate_this, "exec")
+            exec(code, dict(__file__=activate_this))
+    else:   # venv module, just prepend to the PATH
+        os.environ["VIRTUAL_ENV"] = virtualenv
+        bin_dir = os.path.abspath(os.path.dirname(find_virtualenv_file(virtualenv, "activate")))
+        if "PATH" in os.environ:
+            os.environ["PATH"] = os.path.pathsep.join([bin_dir, os.environ["PATH"]])
+        else:
+            os.environ["PATH"] = bin_dir

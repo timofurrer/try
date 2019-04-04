@@ -34,7 +34,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
 
-    install_requires=["click"],
+    install_requires=["click", "virtualenv"],
 
     entry_points={
         "console_scripts": [

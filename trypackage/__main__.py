@@ -20,9 +20,12 @@ from .config import parse_config
 def normalize_python_version(ctx, param, value):  # pylint: disable=unused-argument
     """Normalize given python version."""
     if value is None:
-        return "python{major}.{minor}".format(
-            major=sys.version_info.major,
-            minor=sys.version_info.minor)
+        if os.name == "nt":
+            return "python"
+        else:
+            return "python{major}.{minor}".format(
+                major=sys.version_info.major,
+                minor=sys.version_info.minor)
 
     if re.match(r"\d\.\d", value):
         return "python{0}".format(value)
@@ -40,7 +43,7 @@ def resolve_packages(ctx, param, value):
         match = re.match(r"([^/]+?/[^/:]+)(?::(.+))?", value)
         if match:  # install from github repository
             name = match.group(1)
-            url = "git+git://github.com/{0}".format(match.group(1))
+            url = "git+https://github.com/{0}".format(match.group(1))
             import_name = match.group(2) if match.group(2) else match.group(1).split("/")[-1]
         else:  # install from PyPI
             if ":" in value:
