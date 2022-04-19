@@ -127,7 +127,7 @@ def use_template(packages):
 
     :param list packages: the name of the packages to import
 
-    :returns: the path to the created tempkate file
+    :returns: the path to the created template file
     :rtype: str
     """
     with open(os.path.join(os.path.dirname(__file__), "script.template")) as template_file:
