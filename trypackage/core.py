@@ -14,6 +14,7 @@ import contextlib
 import threading
 from subprocess import Popen
 from collections import namedtuple
+from platform import system
 
 
 Package = namedtuple("Package", ["name", "url", "import_name"])
@@ -146,7 +147,10 @@ def pip_install(package, index=None):
 
 def run_shell(shell, startup_script):
     """Run specific python shell."""
-    exec_in_virtualenv("PYTHONSTARTUP={0} {1}".format(startup_script, shell))
+    if system() == "Windows":
+        exec_in_virtualenv("PYTHONSTARTUP={0} && {1}".format(startup_script, shell))
+    else:
+        exec_in_virtualenv("PYTHONSTARTUP={0} {1}".format(startup_script, shell))
 
 
 def run_editor(template_path):
@@ -157,7 +161,13 @@ def run_editor(template_path):
 
 def exec_in_virtualenv(command):
     """Execute command in virtualenv."""
-    proc = Popen(". {0}/bin/activate && {1}".format(context.virtualenv_path, command), shell=True)
+    if system() == "Windows":
+        if command.startswith("PYTHONSTARTUP"):
+            proc = Popen("{0}/Scripts/activate && set {1}".format(context.virtualenv_path, command), shell=True)
+        else:
+            proc = Popen("{0}/Scripts/activate && {1}".format(context.virtualenv_path, command), shell=True)
+    else:
+        proc = Popen(". {0}/bin/activate && {1}".format(context.virtualenv_path, command), shell=True)
     if proc.wait() != 0:
         raise TryError("Command '{0}' exited with error code: {1}. See {2}".format(
             command, proc.returncode, context.logfile))
