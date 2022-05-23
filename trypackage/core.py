@@ -95,7 +95,7 @@ def use_virtualenv(virtualenv, python_version):
             context.virtualenv_path = virtualenv
             yield True
         else:
-            if python_version[0] in ['2', '3']:
+            if all(map(str.isdecimal, python_version.split("."))):
                 python_exe = "python{}".format(python_version)
             else:
                 # Assume python version is actually the executable
