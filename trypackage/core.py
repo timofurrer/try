@@ -96,7 +96,12 @@ def use_virtualenv(virtualenv, python_version):
             context.virtualenv_path = virtualenv
             yield True
         else:
-            proc = Popen("virtualenv env -p {0} >> {1}".format(python_version, context.logfile),
+            if all(map(str.isdecimal, python_version.split("."))):
+                python_exe = "python{}".format(python_version)
+            else:
+                # Assume python version is actually the executable
+                python_exe = python_version
+            proc = Popen("{0} -m venv env >> {1}".format(python_exe, context.logfile),
                          shell=True, cwd=context.tempdir_path)
             context.virtualenv_path = os.path.join(context.tempdir_path, "env")
             yield proc.wait() == 0
